@@ -17,7 +17,7 @@ class Simplifier : public AbstractSimplifier
 {
 	public:
 		Simplifier();
-		virtual void simplifier(Rule* );
+		virtual void simplifier(Rule* ,const vector<vector<unsigned>>& );
 
 	private:
 			//this name are temporany
