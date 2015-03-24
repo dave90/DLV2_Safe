@@ -13,7 +13,7 @@ namespace grounder {
 
 	void Simplifier::simplifier(Rule* currentRule,const vector<vector<unsigned>>& tableSearcher)
 	{
-		unsigned atom_counter=0;
+
 		unsigned index_body_atom=0;
 		Atom *searchAtom=0;
 		for(auto atom=currentRule->getBeginBody();atom!=currentRule->getEndBody();++atom,++index_body_atom)
@@ -26,8 +26,8 @@ namespace grounder {
 				GenericAtom* genericBodyAtom=new GenericAtom;
 				genericBodyAtom->setTerms((*atom)->getTerms());
 				genericBodyAtom->setFact((*atom)->isFact());
-				for(unsigned i=0;i<tableSearcher[atom_counter].size();++i)
-								predicateExt->addGenericAtom(tableSearcher[atom_counter][i],genericBodyAtom);
+				for(unsigned i=0;i<tableSearcher[index_body_atom].size();++i)
+								predicateExt->addGenericAtom(tableSearcher[index_body_atom][i],genericBodyAtom);
 			}
 
 
