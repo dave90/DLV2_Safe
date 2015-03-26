@@ -17,13 +17,13 @@ class Simplifier : public AbstractSimplifier
 {
 	public:
 		Simplifier();
-		virtual void simplifier(Rule* ,const vector<vector<unsigned>>& );
+		virtual void simplifier(Rule* ,const vector<vector<unsigned>>& ,vector<bool>&);
 
 	private:
 			//this name are temporany
-		virtual bool check1();
-		virtual bool check2();
-		virtual bool check3();
+//		virtual bool check1();
+//		virtual bool check2();
+//		virtual bool check3();
 };
 
 }
