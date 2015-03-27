@@ -11,36 +11,46 @@
 namespace DLV2 {
 namespace grounder {
 
-	void Simplifier::simplifier(Rule* currentRule,const vector<vector<unsigned>>& tableSearcher, vector<bool>& atom_undef_inbody)
+	void Simplifier::simplifier(Rule*& currentRule,const vector<vector<unsigned>>& tableSearcher, vector<bool>& atom_undef_inbody)
 	{
-		Rule* ruleSemplified=new Rule;
+		Rule* ruleSimplified=new Rule;
+		vector<unsigned> index_body_atom_to_delete;
 		unsigned size_body=currentRule->getSizeBody();
 		unsigned index_body_atom=0;
 		unsigned index_head_atom=0;
 		Atom *searchAtom=0;
 		for(auto atom=currentRule->getBeginBody();atom!=currentRule->getEndBody();++atom,++index_body_atom)
 		{
+			if(atom_undef_inbody[index_body_atom])
+			{
+				ruleSimplified->addInBody(*atom);
+				continue;
+			}
 			if(!atom_undef_inbody[index_body_atom])
+			{
 					if(!((*atom)->isNegative() && StatementDependency::getInstance()->isPredicateNegativeStratified((*atom)->getPredicate()->getIndex())))
 					{
-						(*atom)->~Atom();
+						index_body_atom_to_delete.push_back(index_body_atom);
 						size_body--;
 						continue;
 					}
-			PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
-			searchAtom=predicateExt->getGenericAtom((*atom));
+					PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
+					searchAtom=predicateExt->getGenericAtom((*atom));
 
-			if(searchAtom!=nullptr) //if atom is in table check if it is true or not
-			{
-				if((searchAtom->isFact() && !searchAtom->isNegative()) )
-				{
-					//if this atom is true i have to delete it from rule
-					(*atom)->~Atom();
-					size_body--;
-				}
+					if(searchAtom!=nullptr) //if atom is in table check if it is true or not
+					{
+						if((searchAtom->isFact() && !searchAtom->isNegative()) )
+						{
+							//if this atom is true i have to delete it from rule
+							index_body_atom_to_delete.push_back(index_body_atom);
+							size_body--;
+						}
 
+					}
 			}
 		}
+
+
 
 		bool headTrue=false;
 
@@ -50,6 +60,7 @@ namespace grounder {
 		}
 			for(auto atom=currentRule->getBeginHead();atom!=currentRule->getEndHead();++atom,++index_head_atom)
 			{
+				ruleSimplified->addInHead(*atom);
 				PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
 				searchAtom=predicateExt->getGenericAtom((*atom));
 				if(searchAtom==nullptr)
@@ -61,6 +72,9 @@ namespace grounder {
 						predicateExt->addGenericAtom(tableSearcher[index_head_atom][i],genericHeadAtom);
 				}
 			}
+
+			delete currentRule;
+			currentRule=ruleSimplified;
 	}
 
 

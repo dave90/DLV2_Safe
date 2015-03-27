@@ -13,11 +13,11 @@
 namespace DLV2 {
 namespace grounder {
 
-class Simplifier : public AbstractSimplifier
+class Simplifier
 {
 	public:
 		Simplifier();
-		virtual void simplifier(Rule* ,const vector<vector<unsigned>>& ,vector<bool>&);
+		virtual void simplifier(Rule*& ,const vector<vector<unsigned>>& ,vector<bool>&);
 
 	private:
 			//this name are temporany
