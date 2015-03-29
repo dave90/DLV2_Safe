@@ -21,6 +21,7 @@ class Simplifier
 
 	private:
 			//this name are temporany
+		virtual Atom* getSearchAtom(Atom*);
 //		virtual bool check1();
 //		virtual bool check2();
 //		virtual bool check3();

@@ -14,8 +14,6 @@ namespace grounder {
 	void Simplifier::simplifier(Rule*& currentRule,const vector<vector<unsigned>>& tableSearcher, vector<bool>& atom_undef_inbody)
 	{
 		Rule* ruleSimplified=new Rule;
-		vector<unsigned> index_body_atom_to_delete;
-		unsigned size_body=currentRule->getSizeBody();
 		unsigned index_body_atom=0;
 		unsigned index_head_atom=0;
 		Atom *searchAtom=0;
@@ -30,22 +28,26 @@ namespace grounder {
 			{
 					if(!((*atom)->isNegative() && StatementDependency::getInstance()->isPredicateNegativeStratified((*atom)->getPredicate()->getIndex())))
 					{
-						index_body_atom_to_delete.push_back(index_body_atom);
-						size_body--;
 						continue;
 					}
-					PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
-					searchAtom=predicateExt->getGenericAtom((*atom));
-
+					searchAtom=getSearchAtom(*atom);
+//					PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
+//					searchAtom=predicateExt->getGenericAtom((*atom));
+					if (searchAtom==nullptr)
+					{
+						ruleSimplified->addInBody(*atom);
+					}
 					if(searchAtom!=nullptr) //if atom is in table check if it is true or not
 					{
-						if((searchAtom->isFact() && !searchAtom->isNegative()) )
+						if(searchAtom->isFact()==searchAtom->isNegative())
 						{
-							//if this atom is true i have to delete it from rule
-							index_body_atom_to_delete.push_back(index_body_atom);
-							size_body--;
+							ruleSimplified->addInBody(*atom);
 						}
-
+//						if((searchAtom->isFact() && !searchAtom->isNegative()) )
+//						{
+//							//if this atom is true i have to delete it from rule
+//							size_body--;
+//						}
 					}
 			}
 		}
@@ -53,8 +55,7 @@ namespace grounder {
 
 
 		bool headTrue=false;
-
-		if(size_body==0 && currentRule->getSizeHead()==1)
+		if(ruleSimplified->getSizeBody()==0 && currentRule->getSizeHead()==1)
 		{
 			headTrue=true;
 		}
@@ -77,7 +78,13 @@ namespace grounder {
 			currentRule=ruleSimplified;
 	}
 
-
+Atom* Simplifier::getSearchAtom(Atom* atom)
+{
+	Atom* searchAtom=0;
+	PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom).getPredicate()->getIndex());
+	searchAtom=predicateExt->getGenericAtom(*&atom);
+	return searchAtom;
+}
 
 
 }
