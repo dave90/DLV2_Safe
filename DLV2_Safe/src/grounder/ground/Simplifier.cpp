@@ -19,46 +19,27 @@ namespace grounder {
 		unsigned index_head_atom=0;
 		Atom* searchAtom=0;
 		int sizeBody=0;
-		for(auto atom=currentRule->getBeginBody();atom!=currentRule->getEndBody();++atom,++index_body_atom)
+		for(auto atom=currentRule->getBeginBody();
+				atom!=currentRule->getEndBody();++atom,++index_body_atom)
 		{
 			if(atom_undef_inbody[index_body_atom]){
 				ruleSimplified->addInBody(*atom);
 				sizeBody++;
 			}
-			else
-				continue;
-//			if(!atom_undef_inbody[index_body_atom])
-//			{
-//				if((*atom)->getAggregateElementsSize()>0)
-//					continue;
-//
-//					Atom* searchAtom=0;
-//					PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
-//					searchAtom=predicateExt->getGenericAtom(*atom);
-////					searchAtom=getSearchAtom(&atom);
-//					if (searchAtom==nullptr)
-//					{
-//						ruleSimplified->addInBody(*atom);
-//					}
-//					if(searchAtom!=nullptr) //if atom is in table check if it is true or not
-//					{
-//						if( searchAtom->isFact())
-//						{
-//							ruleSimplified->addInBody(*atom);
-//							continue;
-//						}
-//						if(searchAtom->isFact()==false && searchAtom->isNegative()==true )
-//						{
-//							continue;
-//						}
-//						if(searchAtom->isFact()==false && searchAtom->isNegative()==false ) //false atom in body => delete rule
-//						{
-//							delete currentRule;
-//							return;
-//						}
-//				}
-//			}
+			else{
+				Atom* searchAtom=0;
+				PredicateExtension* predicateExt=PredicateExtTable::getInstance()->getPredicateExt((*atom)->getPredicate()->getIndex());
+				searchAtom=predicateExt->getGenericAtom(*atom);
+				if(searchAtom!=nullptr) //if atom is in table check if it is true or not
+				{
+					if(!searchAtom->isFact() && !searchAtom->isNegative()) //false atom in body => delete rule
+					{
+						delete currentRule;
+						return;
+					}
+				}
 		}
+	}
 
 		if(sizeBody==0 && currentRule->getSizeHead()==1)
 		{
